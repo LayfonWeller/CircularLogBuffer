@@ -25,6 +25,14 @@
 
 #include <iterator>
 
+/**
+ * @brief Iterator for the Circular logs
+ * @details Is an random iterator type
+ * @remark Should not need to be called manually, but it can
+ *
+ * @tparam Type Type of each element
+ * @tparam max_size Number of element in the array
+ */
 template <typename Type, size_t max_size>
 class LogIterator
 {

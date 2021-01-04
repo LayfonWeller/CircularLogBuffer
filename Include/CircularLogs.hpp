@@ -7,6 +7,14 @@
 
 #include "CircularLogsIterator.hpp"
 
+/**
+ * @brief
+It's akin to a circular buffer, but reading counter is not present. It keeps the last T_max_size element.
+When all spot are filled, it will instead replace the oldest element.
+ *
+ * @tparam Type Type of to contain it the structure, needs to be copyable and movable
+ * @tparam T_max_size The maximal count of element
+ */
 template <typename Type, size_t T_max_size> struct CircularLogs {
 
     using size_type              = uint8_t;
