@@ -46,3 +46,86 @@ TEMPLATE_TEST_CASE("KeyComparasion - All", "[.KeyComparasion][template][All]", u
             != ns_CircularLogs::Details::key_lesserThen(static_cast<TestType>(i + 1), i));
   }
 }
+
+
+TEST_CASE("IndexedCircularLogs", "[IndexedCircularLogs]") {
+  IndexedCircularLogs<int, 10> logs;
+
+  SECTION("PushBack 1 element") {
+    logs.push_back(10);
+    REQUIRE(logs.at(0).second == 10);
+    REQUIRE(logs.r_at(0).second == 10);
+    REQUIRE(logs.size() == 1);
+  }
+  SECTION("PushBack 2 element") {
+    logs.push_back(10);
+    logs.push_back(20);
+
+    REQUIRE(logs.at(0).second == 10);
+    REQUIRE(logs.r_at(0).second == 20);
+    REQUIRE(logs.size() == 2);
+  }
+  SECTION("PushBack 10 element") {
+    logs.push_back(10);
+    logs.push_back(20);
+    logs.push_back(30);
+    logs.push_back(40);
+    logs.push_back(50);
+    logs.push_back(60);
+    logs.push_back(70);
+    logs.push_back(80);
+    logs.push_back(90);
+    logs.push_back(100);
+
+
+    REQUIRE(logs.at(0).second == 10);
+    REQUIRE(logs.r_at(0).second == 100);
+    REQUIRE(logs.size() == 10);
+  }
+  SECTION("PushBack 15 element") {
+    logs.push_back(10);
+    logs.push_back(20);
+    logs.push_back(30);
+    logs.push_back(40);
+    logs.push_back(50);
+    logs.push_back(60);
+    logs.push_back(70);
+    logs.push_back(80);
+    logs.push_back(90);
+    logs.push_back(100);
+    logs.push_back(110);
+    logs.push_back(120);
+    logs.push_back(130);
+    logs.push_back(140);
+    logs.push_back(150);
+
+    REQUIRE(logs.at(0).second == 60);
+    REQUIRE(logs.r_at(0).second == 150);
+    REQUIRE(logs.size() == 10);
+  }
+
+  SECTION("get_index") {
+    logs.push_back(10);
+    logs.push_back(20);
+    logs.push_back(30);
+    logs.push_back(40);
+    logs.push_back(50);
+    logs.push_back(60);
+    logs.push_back(70);
+    logs.push_back(80);
+    logs.push_back(90);
+    logs.push_back(100);
+    logs.push_back(110);
+    logs.push_back(120);
+    logs.push_back(130);
+    logs.push_back(140);
+    logs.push_back(150);
+
+    REQUIRE(logs.get_index(0) == std::end(logs));
+    const auto IndexIt_7 = logs.get_index(7);
+    REQUIRE(IndexIt_7 != std::end(logs));
+    REQUIRE(IndexIt_7->first == 7);
+    REQUIRE(IndexIt_7->second == 80);
+
+  }
+}

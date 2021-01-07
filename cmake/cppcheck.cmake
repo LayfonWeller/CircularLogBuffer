@@ -53,6 +53,15 @@ if(CPPCHECK_FOUND)
         ${CMAKE_C_CPPCHECK}
         CACHE INTERNAL "Path to CPPcheck for C"
     )
+  else()
+    set(CMAKE_CXX_CPPCHECK
+        ""
+        CACHE INTERNAL "Path to CPPcheck for C++"
+    )
+    set(CMAKE_C_CPPCHECK
+        ""
+        CACHE INTERNAL "Path to CPPcheck for C"
+    )
   endif()
 endif()
 

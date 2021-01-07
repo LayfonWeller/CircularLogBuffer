@@ -25,10 +25,9 @@ namespace Details
 {
 template <typename T>
 using IsSignedInteger = std::enable_if_t</*std::conjunction_v<std::is_integral_v<T>,*/ std::is_signed_v<T> /*>*/, bool>;
-template <typename T>
-using IsUnsignedInteger = std::enable_if_t<std::is_integral_v<T> && std::is_unsigned_v<T>, bool>;
-template <typename T> using remove_cvref_t = std::remove_cv_t<std::remove_reference_t<T>>;
-template <typename T> using remove_cvref   = std::remove_cv<std::remove_reference_t<T>>;
+template <typename T> using IsUnsignedInteger = std::enable_if_t<std::is_integral_v<T> && std::is_unsigned_v<T>, bool>;
+template <typename T> using remove_cvref_t    = std::remove_cv_t<std::remove_reference_t<T>>;
+template <typename T> using remove_cvref      = std::remove_cv<std::remove_reference_t<T>>;
 template <typename T1, typename T2>
 using IsSameBaseType = std::enable_if_t<std::is_same_v<remove_cvref_t<T1>, remove_cvref_t<T2>>, bool>;
 
@@ -45,6 +44,13 @@ constexpr bool key_lesserThen(T1 t_a, T1 t_b)
   const T t1        = t_b + halfPoint - t_a;
   return t1 > halfPoint;
 }
+
+// TODO : Will cleanup the code a fair bit
+// template <typename T> class KeyType final
+// {
+// public:
+//   constexpr bool operator<(const T t_a)
+// }
 
 } // namespace Details
 
@@ -212,6 +218,7 @@ struct IndexedCircularLogs : public CircularLogs<std::pair<WrappingIndexType, Ty
   using key_type    = WrappingIndexType;
   using mapped_type = Type;
   using value_type  = std::pair<key_type, mapped_type>;
+  using parent_type = CircularLogs<value_type, T_max_size>;
 
   key_type m_wrappingIndex;
 
@@ -227,24 +234,54 @@ struct IndexedCircularLogs : public CircularLogs<std::pair<WrappingIndexType, Ty
   // cppcheck-suppress operatorEq
   constexpr IndexedCircularLogs &operator=(IndexedCircularLogs &&other) noexcept = default;
 
-  constexpr void push_back(const mapped_type &a)
+  constexpr void push_back(const mapped_type &a) { parent_type::push_back(std::make_pair(++m_wrappingIndex, a)); }
+  constexpr void push_back(mapped_type &&a) { parent_type::push_back(std::make_pair(++m_wrappingIndex, std::move(a))); }
+
+  constexpr typename parent_type::iterator get_index(const key_type t_req_index)
   {
-    CircularLogs<value_type, T_max_size>::push_back(std::make_pair(++m_wrappingIndex, a));
-  }
-  constexpr void push_back(mapped_type &&a)
-  {
-    CircularLogs<value_type, T_max_size>::push_back(std::make_pair(++m_wrappingIndex, std::move(a)));
+    const auto start_iterator = this->begin();
+    const auto end_iterator   = this->rbegin();
+    if (start_iterator != this->end() && end_iterator != this->rend()) {
+      const key_type start_index = start_iterator->first;
+      const key_type last_index   = end_iterator->first;
+
+      constexpr auto lessEqThen = [](const key_type t_a, const key_type t_b){
+        return t_a == t_b || ns_CircularLogs::Details::key_lesserThen(t_a, t_b);
+      };
+      const bool isBiggerOrEqThenStartIndex = lessEqThen(start_index, t_req_index);
+      const bool isLessOrEqThenLastIndex = lessEqThen(t_req_index, last_index);
+      const bool isBetweenOrIndexes = isBiggerOrEqThenStartIndex && isLessOrEqThenLastIndex;
+      constexpr auto boolToStr = [](const bool t_value) {return t_value ? "true" : "false";};
+      printf("Comparing %d <= %d <= %d = %s (%s and %s)\n", start_index, t_req_index, last_index, boolToStr(isBetweenOrIndexes), boolToStr(isLessOrEqThenLastIndex), boolToStr(isBetweenOrIndexes));
+      if (isBetweenOrIndexes) {
+        return std::next(start_iterator, t_req_index - start_index);
+      } else {
+        return this->end();
+      }
+    }
   }
 
-  // constexpr CircularLogs::iterator get_index(const key_type t_req_index)
-  // {
-  //   const auto start_iterator = this->begin();
-  //   const auto end_iterator   = this->cbegin();
-  //   if (start_iterator != this->end() && end_iterator != this->cend()) {
-  //     const key_type start_index = start_iterator->first;
-  //     const key_type end_index   = end_iterator->first;
+  constexpr typename parent_type::const_iterator get_index(const key_type t_req_index) const
+  {
+    const auto start_iterator = this->cbegin();
+    const auto end_iterator   = this->crbegin();
+    if (start_iterator != this->cend() && end_iterator != this->crend()) {
+      const key_type start_index = start_iterator->first;
+      const key_type last_index   = end_iterator->first;
 
-  //     if ()
-  //   }
-  // }
+      constexpr auto lessEqThen = [](const key_type t_a, const key_type t_b){
+        return t_a == t_b || ns_CircularLogs::Details::key_lesserThen(t_a, t_b);
+      };
+      const bool isBiggerOrEqThenStartIndex = lessEqThen(start_index, t_req_index);
+      const bool isLessOrEqThenLastIndex = lessEqThen(t_req_index, last_index);
+      const bool isBetweenOrIndexes = isBiggerOrEqThenStartIndex && isLessOrEqThenLastIndex;
+      constexpr auto boolToStr = [](const bool t_value) {return t_value ? "true" : "false";};
+      printf("Comparing %d <= %d <= %d = %s (%s and %s)\n", start_index, t_req_index, last_index, boolToStr(isBetweenOrIndexes), boolToStr(isLessOrEqThenLastIndex), boolToStr(isBetweenOrIndexes));
+      if (isBetweenOrIndexes) {
+        return std::next(start_iterator, t_req_index - start_index);
+      } else {
+        return this->end();
+      }
+    }
+  }
 };

@@ -183,17 +183,19 @@ public:
     {
         return !(*this == other);
     }
-    // cppcheck-suppress functionConst // Can't be cost need additional overload
-    // for const otherwise the value returned is editable
+    /* Can't be const need additional overload
+     * for const otherwise the value returned is editable */
+    // cppcheck-suppress functionConst
     [[nodiscard]] constexpr reference operator*() { return root[num]; }
     [[nodiscard]] constexpr const_reference operator*() const
     {
         return root[num];
     }
-    // cppcheck-suppress functionConst // Can't be cost need additional overload
-    // for const otherwise the value returned is editable
+    /* Can't be const need additional overload
+     * for const otherwise the value returned is editable */
+    // cppcheck-suppress functionConst
     [[nodiscard]] constexpr pointer operator->() { return &root[num]; }
-    [[nodiscard]] constexpr const_pointer *operator->() const
+    [[nodiscard]] constexpr const_pointer operator->() const
     {
         return &root[num];
     }
