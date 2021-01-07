@@ -3,6 +3,9 @@ if(__add_catchtestutils)
 endif()
 set(__add_catchtestutils YES)
 
+include(CompilerWarnings)
+include(Findcodecov)
+
 include(CMakeDependentOption)
 
 option(ENABLE_TESTING "Enable Test Builds" OFF)
@@ -64,7 +67,8 @@ function(Add_Unit_Test SOURCE_FILE)
   cmake_parse_arguments(_ "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
   add_executable(${TEST_IDENTIFIER} ${SOURCE_FILE})
-  target_link_libraries(${TEST_IDENTIFIER} PRIVATE catch_main ${__DEP_LIBS}) # project_options project_warnings
+  target_link_libraries(${TEST_IDENTIFIER} PRIVATE catch_main ${__DEP_LIBS})
+  set_project_warnings(${TEST_IDENTIFIER})
 
   # automatically discover tests that are defined in catch based test files you can modify the unittests. TEST_PREFIX to
   # whatever you want, or use different for different binaries
@@ -77,6 +81,8 @@ function(Add_Unit_Test SOURCE_FILE)
     --reporter=${TEST_XML_FORMAT}
     --out=${TEST_IDENTIFIER}.unit.xml
   )
+  add_coverage(${TEST_IDENTIFIER})
+
 
   # # Add a file containing a set of constexpr tests add_executable(constexpr_tests constexpr_tests.cpp)
 # target_link_libraries(constexpr_tests PRIVATE project_options project_warnings catch_main)

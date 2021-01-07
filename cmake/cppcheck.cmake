@@ -10,9 +10,9 @@ if(NOT CPPCHECK_FOUND)
 endif()
 
 if(CPPCHECK_FOUND)
-  option(CPPCHECK_ENABLE_BUILDTIME_CHECKS "Add cppmake check running when we compile a file" ON)
+  option(ENABLE_CPPCHECK_BUILDTIME_CHECKS "Have Cmake run cppcheck when we compile a file" ON)
 
-  if(CPPCHECK_ENABLE_BUILDTIME_CHECKS)
+  if(ENABLE_CPPCHECK_BUILDTIME_CHECKS)
     # message(STATUS "CPPCHECK found")
     set(CMAKE_CXX_CPPCHECK
         ${CPPCHECK_EXECUTABLE}

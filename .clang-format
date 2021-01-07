@@ -1,0 +1,14 @@
+BasedOnStyle: LLVM
+IndentWidth: 2
+# ---
+Language: Cpp
+# Force pointers to the type for C++.
+BreakBeforeBinaryOperators : NonAssignment
+ColumnLimit : 120
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignConsecutiveMacros: true
+BreakBeforeBraces: Linux
+BreakStringLiterals: true
+SortIncludes: false
+# ---

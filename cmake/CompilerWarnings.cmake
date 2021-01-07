@@ -114,9 +114,9 @@ function(set_project_warnings _target_name)
     add_if_warning_is_supported(WARNING_FLAGS C -Werror)
   endif()
 
-  #message(STATUS "WARNING FLAGS       = ${WARNING_FLAGS}")
-  #message(STATUS "CPP_WARNING_FLAGS   = ${CPP_WARNING_FLAGS}")
-  #message(STATUS "C_ONLY_ERRORS FLAGS = ${C_ONLY_ERRORS}")
+  message(STATUS "WARNING FLAGS       = ${WARNING_FLAGS}")
+  message(STATUS "CPP_WARNING_FLAGS   = ${CPP_WARNING_FLAGS}")
+  message(STATUS "C_ONLY_ERRORS FLAGS = ${C_ONLY_ERRORS}")
 
   target_compile_options(
     ${_target_name} INTERFACE ${WARNING_FLAGS} $<$<COMPILE_LANGUAGE:CXX>:${CPP_WARNING_FLAGS}>
