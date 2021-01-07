@@ -10,7 +10,7 @@
 #if __cplusplus < 201703L
 #if __cplusplus == 1
 #warning C++ Earlier then C++98
-#elif __cplusplus ==199711L
+#elif __cplusplus == 199711L
 #warning C++98
 #elif __cplusplus == 201103L
 #warning C++11
@@ -23,19 +23,24 @@ namespace ns_CircularLogs
 {
 namespace Details
 {
-template <typename T> using IsSignedInteger   = std::enable_if_t</*std::conjunction_v<std::is_integral_v<T>,*/ std::is_signed_v<T>/*>*/, bool>;
-template <typename T> using IsUnsignedInteger = std::enable_if_t</*std::conjunction_v<std::is_integral_v<T>,*/ std::is_unsigned_v<T>/*>*/, bool>;
+template <typename T>
+using IsSignedInteger = std::enable_if_t</*std::conjunction_v<std::is_integral_v<T>,*/ std::is_signed_v<T> /*>*/, bool>;
+template <typename T>
+using IsUnsignedInteger = std::enable_if_t<std::is_integral_v<T> && std::is_unsigned_v<T>, bool>;
 template <typename T> using remove_cvref_t = std::remove_cv_t<std::remove_reference_t<T>>;
-template <typename T> using remove_cvref = std::remove_cv<std::remove_reference_t<T>>;
-template <typename T1, typename T2> using IsSameBaseType = std::enable_if_t<std::is_same_v<remove_cvref_t<T1>, remove_cvref_t<T2>>, bool>;
+template <typename T> using remove_cvref   = std::remove_cv<std::remove_reference_t<T>>;
+template <typename T1, typename T2>
+using IsSameBaseType = std::enable_if_t<std::is_same_v<remove_cvref_t<T1>, remove_cvref_t<T2>>, bool>;
 
-template <typename T1, /*typename T2, IsSameBaseType<T1, T2> = true,*/ IsSignedInteger<T1> = true> constexpr bool key_lesserThen( T1 t_a,  T1 t_b)
+template <typename T1, /*typename T2, IsSameBaseType<T1, T2> = true,*/ IsSignedInteger<T1> = true>
+constexpr bool key_lesserThen(T1 t_a, T1 t_b)
 {
   return t_a < t_b;
 }
-template <typename T1, /*typename T2, IsSameBaseType<T1, T2> = true,*/ IsUnsignedInteger<T1> = true> constexpr bool key_lesserThen( T1 t_a,  T1 t_b)
+template <typename T1, /*typename T2, IsSameBaseType<T1, T2> = true,*/ IsUnsignedInteger<T1> = true>
+constexpr bool key_lesserThen(T1 t_a, T1 t_b)
 {
-  using T = remove_cvref_t<T1>;
+  using T           = remove_cvref_t<T1>;
   const T halfPoint = std::numeric_limits<T>::max() / 2;
   const T t1        = t_b + halfPoint - t_a;
   return t1 > halfPoint;
@@ -230,4 +235,16 @@ struct IndexedCircularLogs : public CircularLogs<std::pair<WrappingIndexType, Ty
   {
     CircularLogs<value_type, T_max_size>::push_back(std::make_pair(++m_wrappingIndex, std::move(a)));
   }
+
+  // constexpr CircularLogs::iterator get_index(const key_type t_req_index)
+  // {
+  //   const auto start_iterator = this->begin();
+  //   const auto end_iterator   = this->cbegin();
+  //   if (start_iterator != this->end() && end_iterator != this->cend()) {
+  //     const key_type start_index = start_iterator->first;
+  //     const key_type end_index   = end_iterator->first;
+
+  //     if ()
+  //   }
+  // }
 };
