@@ -243,22 +243,21 @@ struct IndexedCircularLogs : public CircularLogs<std::pair<WrappingIndexType, Ty
     const auto end_iterator   = this->rbegin();
     if (start_iterator != this->end() && end_iterator != this->rend()) {
       const key_type start_index = start_iterator->first;
-      const key_type last_index   = end_iterator->first;
+      const key_type last_index  = end_iterator->first;
 
-      constexpr auto lessEqThen = [](const key_type t_a, const key_type t_b){
+      constexpr auto lessEqThen = [](const key_type t_a, const key_type t_b) {
         return t_a == t_b || ns_CircularLogs::Details::key_lesserThen(t_a, t_b);
       };
       const bool isBiggerOrEqThenStartIndex = lessEqThen(start_index, t_req_index);
-      const bool isLessOrEqThenLastIndex = lessEqThen(t_req_index, last_index);
-      const bool isBetweenOrIndexes = isBiggerOrEqThenStartIndex && isLessOrEqThenLastIndex;
-      constexpr auto boolToStr = [](const bool t_value) {return t_value ? "true" : "false";};
-      printf("Comparing %d <= %d <= %d = %s (%s and %s)\n", start_index, t_req_index, last_index, boolToStr(isBetweenOrIndexes), boolToStr(isLessOrEqThenLastIndex), boolToStr(isBetweenOrIndexes));
+      const bool isLessOrEqThenLastIndex    = lessEqThen(t_req_index, last_index);
+      const bool isBetweenOrIndexes         = isBiggerOrEqThenStartIndex && isLessOrEqThenLastIndex;
       if (isBetweenOrIndexes) {
         return std::next(start_iterator, t_req_index - start_index);
       } else {
         return this->end();
       }
     }
+    return this->end();
   }
 
   constexpr typename parent_type::const_iterator get_index(const key_type t_req_index) const
@@ -267,21 +266,20 @@ struct IndexedCircularLogs : public CircularLogs<std::pair<WrappingIndexType, Ty
     const auto end_iterator   = this->crbegin();
     if (start_iterator != this->cend() && end_iterator != this->crend()) {
       const key_type start_index = start_iterator->first;
-      const key_type last_index   = end_iterator->first;
+      const key_type last_index  = end_iterator->first;
 
-      constexpr auto lessEqThen = [](const key_type t_a, const key_type t_b){
+      constexpr auto lessEqThen = [](const key_type t_a, const key_type t_b) {
         return t_a == t_b || ns_CircularLogs::Details::key_lesserThen(t_a, t_b);
       };
       const bool isBiggerOrEqThenStartIndex = lessEqThen(start_index, t_req_index);
-      const bool isLessOrEqThenLastIndex = lessEqThen(t_req_index, last_index);
-      const bool isBetweenOrIndexes = isBiggerOrEqThenStartIndex && isLessOrEqThenLastIndex;
-      constexpr auto boolToStr = [](const bool t_value) {return t_value ? "true" : "false";};
-      printf("Comparing %d <= %d <= %d = %s (%s and %s)\n", start_index, t_req_index, last_index, boolToStr(isBetweenOrIndexes), boolToStr(isLessOrEqThenLastIndex), boolToStr(isBetweenOrIndexes));
+      const bool isLessOrEqThenLastIndex    = lessEqThen(t_req_index, last_index);
+      const bool isBetweenOrIndexes         = isBiggerOrEqThenStartIndex && isLessOrEqThenLastIndex;
       if (isBetweenOrIndexes) {
         return std::next(start_iterator, t_req_index - start_index);
       } else {
         return this->end();
       }
     }
+    return this->cend();
   }
 };
