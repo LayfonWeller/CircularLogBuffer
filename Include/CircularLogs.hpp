@@ -252,7 +252,7 @@ struct IndexedCircularLogs : public CircularLogs<std::pair<WrappingIndexType, Ty
       const bool isLessOrEqThenLastIndex    = lessEqThen(t_req_index, last_index);
       const bool isBetweenOrIndexes         = isBiggerOrEqThenStartIndex && isLessOrEqThenLastIndex;
       if (isBetweenOrIndexes) {
-        return std::next(start_iterator, t_req_index - start_index);
+        return std::next(start_iterator, static_cast<key_type>(t_req_index - start_index));
       } else {
         return this->end();
       }
@@ -275,7 +275,7 @@ struct IndexedCircularLogs : public CircularLogs<std::pair<WrappingIndexType, Ty
       const bool isLessOrEqThenLastIndex    = lessEqThen(t_req_index, last_index);
       const bool isBetweenOrIndexes         = isBiggerOrEqThenStartIndex && isLessOrEqThenLastIndex;
       if (isBetweenOrIndexes) {
-        return std::next(start_iterator, t_req_index - start_index);
+        return std::next(start_iterator, static_cast<key_type>(t_req_index - start_index));
       } else {
         return this->end();
       }

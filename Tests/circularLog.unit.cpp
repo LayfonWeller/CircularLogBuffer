@@ -52,10 +52,10 @@ TEMPLATE_TEST_CASE("KeyComparasion - All", "[.KeyComparasion][template][All]", u
 
 TEST_CASE("IndexedCircularLogs", "[IndexedCircularLogs]")
 {
-  IndexedCircularLogs<int, 10> logs;
 
   SECTION("PushBack 1 element")
   {
+    IndexedCircularLogs<int, 10> logs;
     logs.push_back(10);
     REQUIRE(logs.at(0).second == 10);
     REQUIRE(logs.r_at(0).second == 10);
@@ -64,6 +64,7 @@ TEST_CASE("IndexedCircularLogs", "[IndexedCircularLogs]")
   }
   SECTION("PushBack 2 element")
   {
+    IndexedCircularLogs<int, 10> logs;
     logs.push_back(10);
     logs.push_back(20);
 
@@ -74,6 +75,7 @@ TEST_CASE("IndexedCircularLogs", "[IndexedCircularLogs]")
   }
   SECTION("PushBack 10 element")
   {
+    IndexedCircularLogs<int, 10> logs;
     logs.push_back(10);
     logs.push_back(20);
     logs.push_back(30);
@@ -92,6 +94,7 @@ TEST_CASE("IndexedCircularLogs", "[IndexedCircularLogs]")
   }
   SECTION("PushBack 15 element")
   {
+    IndexedCircularLogs<int, 10> logs;
     logs.push_back(10);
     logs.push_back(20);
     logs.push_back(30);
@@ -116,6 +119,7 @@ TEST_CASE("IndexedCircularLogs", "[IndexedCircularLogs]")
 
   SECTION("get_index")
   {
+    IndexedCircularLogs<int, 10> logs;
     logs.push_back(10);
     logs.push_back(20);
     logs.push_back(30);
@@ -141,6 +145,7 @@ TEST_CASE("IndexedCircularLogs", "[IndexedCircularLogs]")
 
   SECTION("get_index distance")
   {
+    IndexedCircularLogs<int, 10> logs;
     logs.push_back(10);
     logs.push_back(20);
     logs.push_back(30);
@@ -165,6 +170,7 @@ TEST_CASE("IndexedCircularLogs", "[IndexedCircularLogs]")
 
   SECTION("get_index distance invalid")
   {
+    IndexedCircularLogs<int, 10> logs;
     logs.push_back(10);
     logs.push_back(20);
     logs.push_back(30);
@@ -183,7 +189,32 @@ TEST_CASE("IndexedCircularLogs", "[IndexedCircularLogs]")
 
     const auto indexIt = logs.get_index(20);
     REQUIRE(indexIt == std::end(logs));
+  }
+
+  SECTION("get_index distance Wrapping Index")
+  {
+    constexpr uint8_t            somewhatBefore = std::numeric_limits<uint8_t>::max() - 5;
+    IndexedCircularLogs<int, 10> logs(250);
+    logs.push_back(10);
+    logs.push_back(20);
+    logs.push_back(30);
+    logs.push_back(40);
+    logs.push_back(50);
+    logs.push_back(60);
+    logs.push_back(70);
+    logs.push_back(80);
+    logs.push_back(90);
+    logs.push_back(100);
+
+    REQUIRE(logs.at(0).first < std::numeric_limits<uint8_t>::max());
+    REQUIRE(logs.at(9).first > std::numeric_limits<uint8_t>::min());
+
+    const auto f = GENERATE(range(static_cast<uint8_t>(0), static_cast<uint8_t>(9)));
+
+    const auto indexIt = logs.get_index(somewhatBefore + f + 1);
+    REQUIRE(indexIt != std::end(logs));
     const auto dist = std::distance(std::begin(logs), indexIt);
-    REQUIRE(logs.at(dist).first == 7);
+    REQUIRE_NOTHROW(logs.at(dist).first == static_cast<uint8_t>(somewhatBefore + f + 1));
+    REQUIRE_NOTHROW(logs.at(dist).second == 10 + f * 10);
   }
 }
