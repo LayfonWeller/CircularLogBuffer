@@ -263,16 +263,19 @@ TEST_CASE("IndexedCircularLogs - iterator", "[IndexedCircularLogs][iterator]")
       if (it != std::end(logs)) {
           return std::distance(std::begin(logs), it) + 1;
       }
-      return logs.size();
+      return -1;
     };
 
     if (f<5) {
-      REQUIRE(GetDistance(f) == 10);
+      REQUIRE(GetDistance(f) == -1);
     } else if (f>14) {
-      REQUIRE(GetDistance(f) == 10);
+      REQUIRE(GetDistance(f) == -1);
     } else {
       REQUIRE(GetDistance(f) == f-4);
     }
+    REQUIRE(GetDistance(std::begin(logs)->first) == 1);
+    REQUIRE(GetDistance(std::rbegin(logs)->first) == 10);
+
   }
   SECTION("Reverse GetDistance")
   {
@@ -300,17 +303,18 @@ TEST_CASE("IndexedCircularLogs - iterator", "[IndexedCircularLogs][iterator]")
       if (it != std::end(logs)) {
           return std::distance(std::rbegin(logs), std::make_reverse_iterator(it));
       }
-      return logs.size();
+      return -1;
     };
 
     if (f<5) {
-      REQUIRE(GetDistance(f) == 10);
+      REQUIRE(GetDistance(f) == -1);
     } else if (f>14) {
-      REQUIRE(GetDistance(f) == 10);
+      REQUIRE(GetDistance(f) == -1);
     } else {
-      INFO("Value of Gen is " << f);
-      CHECK(GetDistance(f) == 15-f);
+      REQUIRE(GetDistance(f) == 15-f);
     }
+    REQUIRE(GetDistance(std::rbegin(logs)->first) == 1);
+    REQUIRE(GetDistance(std::begin(logs)->first) == 10);
 
   }
 }
