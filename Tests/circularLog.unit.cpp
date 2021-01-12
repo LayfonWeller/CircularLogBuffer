@@ -50,10 +50,9 @@ TEMPLATE_TEST_CASE("KeyComparasion - All", "[.KeyComparasion][template][All]", u
   }
 }
 
-TEST_CASE("IndexedCircularLogs", "[IndexedCircularLogs]")
+TEST_CASE("IndexedCircularLogs - push_back", "[IndexedCircularLogs][push_back]")
 {
-
-  SECTION("PushBack 1 element")
+  SECTION("push_back 1 element")
   {
     IndexedCircularLogs<int, 10> logs;
     logs.push_back(10);
@@ -62,7 +61,7 @@ TEST_CASE("IndexedCircularLogs", "[IndexedCircularLogs]")
     REQUIRE(logs.size() == 1);
     REQUIRE(logs.m_wrappingIndex == 0);
   }
-  SECTION("PushBack 2 element")
+  SECTION("push_back 2 element")
   {
     IndexedCircularLogs<int, 10> logs;
     logs.push_back(10);
@@ -73,7 +72,7 @@ TEST_CASE("IndexedCircularLogs", "[IndexedCircularLogs]")
     REQUIRE(logs.size() == 2);
     REQUIRE(logs.m_wrappingIndex == 1);
   }
-  SECTION("PushBack 10 element")
+  SECTION("push_back 10 element")
   {
     IndexedCircularLogs<int, 10> logs;
     logs.push_back(10);
@@ -92,7 +91,7 @@ TEST_CASE("IndexedCircularLogs", "[IndexedCircularLogs]")
     REQUIRE(logs.size() == 10);
     REQUIRE(logs.m_wrappingIndex == 9);
   }
-  SECTION("PushBack 15 element")
+  SECTION("push_back 15 element")
   {
     IndexedCircularLogs<int, 10> logs;
     logs.push_back(10);
@@ -116,7 +115,208 @@ TEST_CASE("IndexedCircularLogs", "[IndexedCircularLogs]")
     REQUIRE(logs.size() == 10);
     REQUIRE(logs.m_wrappingIndex == 14);
   }
+}
 
+TEST_CASE("IndexedCircularLogs - iterator", "[IndexedCircularLogs][iterator]")
+{
+  SECTION("0 element -> begin == end")
+  {
+    IndexedCircularLogs<int, 10> logs;
+
+    REQUIRE(std::begin(logs) == std::end(logs));
+    REQUIRE(0 == std::distance(std::begin(logs), std::end(logs)));
+  }
+  SECTION("0 element -> rbegin == rend")
+  {
+    IndexedCircularLogs<int, 10> logs;
+
+    REQUIRE(std::rbegin(logs) == std::rend(logs));
+    REQUIRE(0 == std::distance(std::rbegin(logs), std::rend(logs)));
+  }
+  SECTION("1 element -> begin != end")
+  {
+    IndexedCircularLogs<int, 10> logs;
+    logs.push_back(0);
+
+    REQUIRE(std::begin(logs) != std::end(logs));
+    REQUIRE(std::next(std::begin(logs), 1) == std::end(logs));
+    REQUIRE(1 == std::distance(std::begin(logs), std::end(logs)));
+  }
+  SECTION("1 element -> rbegin != rend")
+  {
+    IndexedCircularLogs<int, 10> logs;
+    logs.push_back(0);
+
+    REQUIRE(std::rbegin(logs) != std::rend(logs));
+    REQUIRE(std::next(std::rbegin(logs), 1) == std::rend(logs));
+    REQUIRE(1 == std::distance(std::rbegin(logs), std::rend(logs)));
+  }
+  SECTION("10 element -> begin != end")
+  {
+    IndexedCircularLogs<int, 10> logs;
+    logs.push_back(0);
+    logs.push_back(1);
+    logs.push_back(2);
+    logs.push_back(3);
+    logs.push_back(4);
+    logs.push_back(5);
+    logs.push_back(6);
+    logs.push_back(7);
+    logs.push_back(8);
+    logs.push_back(9);
+
+    REQUIRE(std::begin(logs) != std::end(logs));
+    REQUIRE(std::next(std::begin(logs), 9) != std::end(logs));
+    REQUIRE(std::next(std::begin(logs), 10) == std::end(logs));
+    REQUIRE(10 == std::distance(std::begin(logs), std::end(logs)));
+  }
+  SECTION("10 element -> begin != end")
+  {
+    IndexedCircularLogs<int, 10> logs;
+    logs.push_back(0);
+    logs.push_back(1);
+    logs.push_back(2);
+    logs.push_back(3);
+    logs.push_back(4);
+    logs.push_back(5);
+    logs.push_back(6);
+    logs.push_back(7);
+    logs.push_back(8);
+    logs.push_back(9);
+
+    REQUIRE(std::rbegin(logs) != std::rend(logs));
+    REQUIRE(std::next(std::rbegin(logs), 9) != std::rend(logs));
+    REQUIRE(std::next(std::rbegin(logs), 10) == std::rend(logs));
+    REQUIRE(10 == std::distance(std::rbegin(logs), std::rend(logs)));
+  }
+  SECTION("15 element -> begin != end")
+  {
+    IndexedCircularLogs<int, 10> logs;
+    logs.push_back(0);
+    logs.push_back(1);
+    logs.push_back(2);
+    logs.push_back(3);
+    logs.push_back(4);
+    logs.push_back(5);
+    logs.push_back(6);
+    logs.push_back(7);
+    logs.push_back(8);
+    logs.push_back(9);
+    logs.push_back(10);
+    logs.push_back(11);
+    logs.push_back(12);
+    logs.push_back(13);
+    logs.push_back(14);
+
+    REQUIRE(std::begin(logs) != std::end(logs));
+    REQUIRE(std::next(std::begin(logs), 9) != std::end(logs));
+    REQUIRE(std::next(std::begin(logs), 10) == std::end(logs));
+    REQUIRE(10 == std::distance(std::begin(logs), std::end(logs)));
+  }
+  SECTION("15 element -> begin != end")
+  {
+    IndexedCircularLogs<int, 10> logs;
+    logs.push_back(0);
+    logs.push_back(1);
+    logs.push_back(2);
+    logs.push_back(3);
+    logs.push_back(4);
+    logs.push_back(5);
+    logs.push_back(6);
+    logs.push_back(7);
+    logs.push_back(8);
+    logs.push_back(9);
+    logs.push_back(10);
+    logs.push_back(11);
+    logs.push_back(12);
+    logs.push_back(13);
+    logs.push_back(14);
+
+    REQUIRE(std::rbegin(logs) != std::rend(logs));
+    REQUIRE(std::next(std::rbegin(logs), 9) != std::rend(logs));
+    REQUIRE(std::next(std::rbegin(logs), 10) == std::rend(logs));
+    REQUIRE(10 == std::distance(std::rbegin(logs), std::rend(logs)));
+  }
+  SECTION("GetDistance from start")
+  {
+    IndexedCircularLogs<int, 10> logs;
+    logs.push_back(0);
+    logs.push_back(1);
+    logs.push_back(2);
+    logs.push_back(3);
+    logs.push_back(4);
+    logs.push_back(5);
+    logs.push_back(6);
+    logs.push_back(7);
+    logs.push_back(8);
+    logs.push_back(9);
+    logs.push_back(10);
+    logs.push_back(11);
+    logs.push_back(12);
+    logs.push_back(13);
+    logs.push_back(14);
+
+    const auto f = GENERATE(range(0, 20));
+    const auto GetDistance = [&logs](const uint8_t t_wantedIndex) ->IndexedCircularLogs<int, 10>::difference_type
+    {
+      const auto it = logs.get_index(t_wantedIndex);
+      if (it != std::end(logs)) {
+          return std::distance(std::begin(logs), it) + 1;
+      }
+      return logs.size();
+    };
+
+    if (f<5) {
+      REQUIRE(GetDistance(f) == 10);
+    } else if (f>14) {
+      REQUIRE(GetDistance(f) == 10);
+    } else {
+      REQUIRE(GetDistance(f) == f-4);
+    }
+  }
+  SECTION("Reverse GetDistance")
+  {
+    IndexedCircularLogs<int, 10> logs;
+    logs.push_back(0);
+    logs.push_back(1);
+    logs.push_back(2);
+    logs.push_back(3);
+    logs.push_back(4);
+    logs.push_back(5);
+    logs.push_back(6);
+    logs.push_back(7);
+    logs.push_back(8);
+    logs.push_back(9);
+    logs.push_back(10);
+    logs.push_back(11);
+    logs.push_back(12);
+    logs.push_back(13);
+    logs.push_back(14);
+
+    const auto f = GENERATE(range(0, 20));
+    const auto GetDistance = [&logs](const uint8_t t_wantedIndex) ->IndexedCircularLogs<int, 10>::difference_type
+    {
+      const auto it = logs.get_index(t_wantedIndex);
+      if (it != std::end(logs)) {
+          return std::distance(std::rbegin(logs), std::make_reverse_iterator(it));
+      }
+      return logs.size();
+    };
+
+    if (f<5) {
+      REQUIRE(GetDistance(f) == 10);
+    } else if (f>14) {
+      REQUIRE(GetDistance(f) == 10);
+    } else {
+      INFO("Value of Gen is " << f);
+      CHECK(GetDistance(f) == 15-f);
+    }
+
+  }
+}
+
+TEST_CASE("IndexedCircularLogs - get_index", "[IndexedCircularLogs][get_index]")
+{
   SECTION("get_index")
   {
     IndexedCircularLogs<int, 10> logs;

@@ -78,17 +78,27 @@ template <typename Type, size_t T_max_size> struct CircularLogs {
   using reverse_iterator       = std::reverse_iterator<iterator>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-  [[nodiscard]] constexpr iterator       begin() { return iterator(m_container.data(), (m_full ? m_index : 0), false); }
-  [[nodiscard]] constexpr iterator       end() { return iterator(m_container.data(), m_index, m_full); }
-  [[nodiscard]] constexpr const_iterator cbegin() const
+  [[nodiscard]] constexpr iterator begin() noexcept
+  {
+    return iterator(m_container.data(), (m_full ? m_index : 0), false);
+  }
+  [[nodiscard]] constexpr const_iterator begin() const noexcept
   {
     return const_iterator(m_container.data(), (m_full ? m_index : 0), false);
   }
-  [[nodiscard]] constexpr const_iterator   cend() const { return const_iterator(m_container.data(), m_index, m_full); }
-  [[nodiscard]] constexpr reverse_iterator rbegin() { return std::make_reverse_iterator(end()); }
-  [[nodiscard]] constexpr reverse_iterator rend() { return std::make_reverse_iterator(begin()); }
-  [[nodiscard]] constexpr const_reverse_iterator crbegin() const { return std::make_reverse_iterator(cend()); }
-  [[nodiscard]] constexpr const_reverse_iterator crend() const { return std::make_reverse_iterator(cbegin()); }
+  [[nodiscard]] constexpr iterator       end() noexcept { return iterator(m_container.data(), m_index, m_full); }
+  [[nodiscard]] constexpr const_iterator end() const noexcept
+  {
+    return const_iterator(m_container.data(), m_index, m_full);
+  }
+  [[nodiscard]] constexpr const_iterator         cbegin() const noexcept { return begin(); }
+  [[nodiscard]] constexpr const_iterator         cend() const noexcept {return end();};
+  [[nodiscard]] constexpr reverse_iterator       rbegin() noexcept { return std::make_reverse_iterator(end()); }
+  [[nodiscard]] constexpr const_reverse_iterator rbegin() const noexcept { return std::make_reverse_iterator(cend()); }
+  [[nodiscard]] constexpr reverse_iterator       rend() noexcept { return std::make_reverse_iterator(begin()); }
+  [[nodiscard]] constexpr const_reverse_iterator rend() const noexcept { return std::make_reverse_iterator(cbegin()); }
+  [[nodiscard]] constexpr const_reverse_iterator crbegin() const noexcept { return rbegin(); }
+  [[nodiscard]] constexpr const_reverse_iterator crend() const noexcept { return rend(); }
 
   constexpr reference       operator[](const difference_type &diff) noexcept { return *std::next(begin(), diff); }
   constexpr const_reference operator[](const difference_type &diff) const noexcept
@@ -96,7 +106,10 @@ template <typename Type, size_t T_max_size> struct CircularLogs {
     return *std::next(cbegin(), diff);
   }
 
-  [[nodiscard]] constexpr bool is_valid_index(const difference_type &diff) const { return diff < size() && diff >= 0; }
+  [[nodiscard]] constexpr bool is_valid_index(const difference_type &diff) const noexcept
+  {
+    return diff < size() && diff >= 0;
+  }
 
   [[nodiscard]] constexpr reference at(const difference_type &diff)
   {
@@ -237,7 +250,7 @@ struct IndexedCircularLogs : public CircularLogs<std::pair<WrappingIndexType, Ty
   constexpr void push_back(const mapped_type &a) { parent_type::push_back(std::make_pair(++m_wrappingIndex, a)); }
   constexpr void push_back(mapped_type &&a) { parent_type::push_back(std::make_pair(++m_wrappingIndex, std::move(a))); }
 
-  constexpr typename parent_type::iterator get_index(const key_type t_req_index)
+  [[nodiscard]] constexpr typename parent_type::iterator get_index(const key_type t_req_index)
   {
     const auto start_iterator = this->begin();
     const auto end_iterator   = this->rbegin();
@@ -245,7 +258,8 @@ struct IndexedCircularLogs : public CircularLogs<std::pair<WrappingIndexType, Ty
       const key_type start_index = start_iterator->first;
       const key_type last_index  = end_iterator->first;
 
-      constexpr auto lessEqThen = [](const key_type t_a, const key_type t_b) {
+      constexpr auto lessEqThen = [](const key_type t_a, const key_type t_b) constexpr
+      {
         return t_a == t_b || ns_CircularLogs::Details::key_lesserThen(t_a, t_b);
       };
       const bool isBiggerOrEqThenStartIndex = lessEqThen(start_index, t_req_index);
@@ -260,7 +274,7 @@ struct IndexedCircularLogs : public CircularLogs<std::pair<WrappingIndexType, Ty
     return this->end();
   }
 
-  constexpr typename parent_type::const_iterator get_index(const key_type t_req_index) const
+  [[nodiscard]] constexpr typename parent_type::const_iterator get_index(const key_type t_req_index) const
   {
     const auto start_iterator = this->cbegin();
     const auto end_iterator   = this->crbegin();
@@ -268,7 +282,8 @@ struct IndexedCircularLogs : public CircularLogs<std::pair<WrappingIndexType, Ty
       const key_type start_index = start_iterator->first;
       const key_type last_index  = end_iterator->first;
 
-      constexpr auto lessEqThen = [](const key_type t_a, const key_type t_b) {
+      constexpr auto lessEqThen = [](const key_type t_a, const key_type t_b) constexpr
+      {
         return t_a == t_b || ns_CircularLogs::Details::key_lesserThen(t_a, t_b);
       };
       const bool isBiggerOrEqThenStartIndex = lessEqThen(start_index, t_req_index);
