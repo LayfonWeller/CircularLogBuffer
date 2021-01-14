@@ -317,6 +317,27 @@ TEST_CASE("IndexedCircularLogs - iterator", "[IndexedCircularLogs][iterator]")
     REQUIRE(GetDistance(std::begin(logs)->first) == 10);
 
   }
+  SECTION("last index is wrapping_index")
+  {
+    IndexedCircularLogs<int, 10> logs;
+    logs.push_back(10);
+    logs.push_back(20);
+    logs.push_back(30);
+    logs.push_back(40);
+    logs.push_back(50);
+    logs.push_back(60);
+    logs.push_back(70);
+    logs.push_back(80);
+    logs.push_back(90);
+    logs.push_back(100);
+    logs.push_back(110);
+    logs.push_back(120);
+    logs.push_back(130);
+    logs.push_back(140);
+    logs.push_back(150);
+
+    REQUIRE(std::rbegin(logs)->first == logs.m_wrappingIndex);
+  }
 }
 
 TEST_CASE("IndexedCircularLogs - get_index", "[IndexedCircularLogs][get_index]")

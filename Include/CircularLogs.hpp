@@ -292,7 +292,7 @@ struct IndexedCircularLogs : public CircularLogs<std::pair<WrappingIndexType, Ty
       if (isBetweenOrIndexes) {
         return std::next(start_iterator, static_cast<key_type>(t_req_index - start_index));
       } else {
-        return this->end();
+        return this->cend();
       }
     }
     return this->cend();
