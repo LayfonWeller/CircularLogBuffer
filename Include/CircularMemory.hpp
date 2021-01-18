@@ -5,7 +5,7 @@
 #include <utility>
 #include <stdexcept>
 
-#include "CircularLogsIterator.hpp"
+#include "CircularMemoryIterator.hpp"
 
 #if __cplusplus < 201703L
 #if __cplusplus == 1
@@ -19,7 +19,7 @@
 #endif
 #Error "Requires C++17 or newer"
 #endif
-namespace ns_CircularLogs
+namespace ns_CircularMemory
 {
 namespace Details
 {
@@ -54,7 +54,7 @@ constexpr bool key_lesserThen(T1 t_a, T1 t_b)
 
 } // namespace Details
 
-} // namespace ns_CircularLogs
+} // namespace ns_CircularMemory
 
 /**
  * @brief
@@ -64,7 +64,7 @@ When all spot are filled, it will instead replace the oldest element.
  * @tparam Type Type of to contain it the structure, needs to be copyable and movable
  * @tparam T_max_size The maximal count of element
  */
-template <typename Type, size_t T_max_size> struct CircularLogs {
+template <typename Type, size_t T_max_size> struct CircularMemory {
 
   using size_type              = uint8_t;
   using value_type             = Type;
@@ -73,8 +73,8 @@ template <typename Type, size_t T_max_size> struct CircularLogs {
   using const_reference        = const value_type &;
   using pointer                = value_type *;
   using const_pointer          = const value_type *;
-  using iterator               = LogIterator<value_type, T_max_size>;
-  using const_iterator         = LogIterator<const value_type, T_max_size>;
+  using iterator               = CircularMemoryIterator<value_type, T_max_size>;
+  using const_iterator         = CircularMemoryIterator<const value_type, T_max_size>;
   using reverse_iterator       = std::reverse_iterator<iterator>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
@@ -226,26 +226,26 @@ public:
 };
 
 template <typename Type, size_t T_max_size, typename WrappingIndexType = uint8_t>
-struct IndexedCircularLogs : public CircularLogs<std::pair<WrappingIndexType, Type>, T_max_size> {
+struct IndexedCircularMemory : public CircularMemory<std::pair<WrappingIndexType, Type>, T_max_size> {
 
   using key_type    = WrappingIndexType;
   using mapped_type = Type;
   using value_type  = std::pair<key_type, mapped_type>;
-  using parent_type = CircularLogs<value_type, T_max_size>;
+  using parent_type = CircularMemory<value_type, T_max_size>;
 
   key_type m_wrappingIndex;
 
-  constexpr IndexedCircularLogs(const key_type t_wrappingIndex = std::numeric_limits<key_type>::max()) noexcept
+  constexpr IndexedCircularMemory(const key_type t_wrappingIndex = std::numeric_limits<key_type>::max()) noexcept
       : m_wrappingIndex(std::move(t_wrappingIndex))
   {
   }
-  ~IndexedCircularLogs() noexcept                                          = default;
-  constexpr IndexedCircularLogs(const IndexedCircularLogs &other) noexcept = default;
-  constexpr IndexedCircularLogs(IndexedCircularLogs &&other) noexcept      = default;
+  ~IndexedCircularMemory() noexcept                                          = default;
+  constexpr IndexedCircularMemory(const IndexedCircularMemory &other) noexcept = default;
+  constexpr IndexedCircularMemory(IndexedCircularMemory &&other) noexcept      = default;
   // cppcheck-suppress operatorEq
-  constexpr IndexedCircularLogs &operator=(const IndexedCircularLogs &other) noexcept = default;
+  constexpr IndexedCircularMemory &operator=(const IndexedCircularMemory &other) noexcept = default;
   // cppcheck-suppress operatorEq
-  constexpr IndexedCircularLogs &operator=(IndexedCircularLogs &&other) noexcept = default;
+  constexpr IndexedCircularMemory &operator=(IndexedCircularMemory &&other) noexcept = default;
 
   constexpr void push_back(const mapped_type &a) { parent_type::push_back(std::make_pair(++m_wrappingIndex, a)); }
   constexpr void push_back(mapped_type &&a) { parent_type::push_back(std::make_pair(++m_wrappingIndex, std::move(a))); }
@@ -260,7 +260,7 @@ struct IndexedCircularLogs : public CircularLogs<std::pair<WrappingIndexType, Ty
 
       constexpr auto lessEqThen = [](const key_type t_a, const key_type t_b) constexpr
       {
-        return t_a == t_b || ns_CircularLogs::Details::key_lesserThen(t_a, t_b);
+        return t_a == t_b || ns_CircularMemory::Details::key_lesserThen(t_a, t_b);
       };
       const bool isBiggerOrEqThenStartIndex = lessEqThen(start_index, t_req_index);
       const bool isLessOrEqThenLastIndex    = lessEqThen(t_req_index, last_index);
@@ -284,7 +284,7 @@ struct IndexedCircularLogs : public CircularLogs<std::pair<WrappingIndexType, Ty
 
       constexpr auto lessEqThen = [](const key_type t_a, const key_type t_b) constexpr
       {
-        return t_a == t_b || ns_CircularLogs::Details::key_lesserThen(t_a, t_b);
+        return t_a == t_b || ns_CircularMemory::Details::key_lesserThen(t_a, t_b);
       };
       const bool isBiggerOrEqThenStartIndex = lessEqThen(start_index, t_req_index);
       const bool isLessOrEqThenLastIndex    = lessEqThen(t_req_index, last_index);

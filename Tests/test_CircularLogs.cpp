@@ -1,7 +1,7 @@
-#define DEBUG_LOGITERATOR 1
+#define DEBUG_CIRCULAR_MEMORY_ITERATOR 1
 #define DEBUG
 #include <assert.h>
-#include "CircularLogs.hpp"
+#include "CircularMemory.hpp"
 #include <array>
 
 #include <string_view>
@@ -90,10 +90,10 @@ template <typename CirLogs> void testCircularLogs(CirLogs test = CirLogs())
 int main()
 {
   std::cout << "\n\nCircularLogs = \n";
-  testCircularLogs<CircularLogs<int, 10>>();
+  testCircularLogs<CircularMemory<int, 10>>();
 
   std::cout << "\n\nIndexedCircularLogs = \n";
-  testCircularLogs<IndexedCircularLogs<int, 10>>(IndexedCircularLogs<int, 10>(33));
+  testCircularLogs<IndexedCircularMemory<int, 10>>(IndexedCircularMemory<int, 10>(33));
 
   return 0;
 }

@@ -1,4 +1,4 @@
-#if defined(DEBUG) && defined(DEBUG_LOGITERATOR) && DEBUG_LOGITERATOR
+#if defined(DEBUG) && defined(DEBUG_CIRCULAR_MEMORY_ITERATOR) && DEBUG_CIRCULAR_MEMORY_ITERATOR
 // #include <assert.h>
 
 #pragma GCC push_options
@@ -14,10 +14,10 @@
 //         assert(num >= 0 && num < max_size);                                    \
 //     }
 #else
-#ifdef DEBUG_LOGITERATOR
-#undef DEBUG_LOGITERATOR
+#ifdef DEBUG_CIRCULAR_MEMORY_ITERATOR
+#undef DEBUG_CIRCULAR_MEMORY_ITERATOR
 #endif
-#define DEBUG_LOGITERATOR 0
+#define DEBUG_CIRCULAR_MEMORY_ITERATOR 0
 #define DEBUG_PART(a) \
     {                 \
     }
@@ -26,7 +26,7 @@
 #include <iterator>
 
 /**
- * @brief Iterator for the Circular logs
+ * @brief Iterator for the Circular Memory space
  * @details Is an random iterator type
  * @remark Should not need to be called manually, but it can
  *
@@ -34,7 +34,7 @@
  * @tparam max_size Number of element in the array
  */
 template <typename Type, size_t max_size>
-class LogIterator
+class CircularMemoryIterator
 {
 public:
     // iterator traits
@@ -51,11 +51,11 @@ private:
     size_t num = 0;
     bool partOfSecondHalf =
         false; // part of the second half is it's after the roll over point
-               // (between 0 and index if logged filled)
+               // (between 0 and index if memory space filled)
 
     constexpr void decrimentIndex(const difference_type &t_howMuch) noexcept
     {
-        #if DEBUG_LOGITERATOR
+        #if DEBUG_CIRCULAR_MEMORY_ITERATOR
         printf("[%s:%d] this->num=%lu ; Decrement by : %ld\n", __FILE__,
                __LINE__, this->num, t_howMuch);
         #endif
@@ -64,12 +64,12 @@ private:
         if (t_howMuch == 0)
             return;
         const int newNum = num - t_howMuch;
-#if DEBUG_LOGITERATOR
+#if DEBUG_CIRCULAR_MEMORY_ITERATOR
         const auto old = num;
 #endif
         if (newNum < 0)
         {
-#if DEBUG_LOGITERATOR
+#if DEBUG_CIRCULAR_MEMORY_ITERATOR
             assert(partOfSecondHalf == true);
 #endif
             partOfSecondHalf = false;
@@ -79,7 +79,7 @@ private:
         {
             num = newNum;
         }
-#if DEBUG_LOGITERATOR
+#if DEBUG_CIRCULAR_MEMORY_ITERATOR
         assert(num < max_size);
         // printf("[%s:%d] Decrease NUM from %lu by %lu, to %lu\n", __FILE__,
         //        __LINE__, old, t_howMuch, num);
@@ -87,7 +87,7 @@ private:
     }
     constexpr void incrementIndex(const difference_type &t_howMuch) noexcept
     {
-        #if DEBUG_LOGITERATOR
+        #if DEBUG_CIRCULAR_MEMORY_ITERATOR
         printf("[%s:%d] this->num=%lu ; Incriment by : %ld\n", __FILE__,
                __LINE__, this->num, t_howMuch);
         #endif
@@ -96,12 +96,12 @@ private:
         if (t_howMuch == 0)
             return;
         const size_t newNum = num + t_howMuch;
-#if DEBUG_LOGITERATOR
+#if DEBUG_CIRCULAR_MEMORY_ITERATOR
         const auto old = num;
 #endif
         if (newNum >= max_size)
         {
-#if DEBUG_LOGITERATOR
+#if DEBUG_CIRCULAR_MEMORY_ITERATOR
             assert(partOfSecondHalf == false);
 #endif
             partOfSecondHalf = true;
@@ -111,7 +111,7 @@ private:
         {
             num = newNum;
         }
-#if DEBUG_LOGITERATOR
+#if DEBUG_CIRCULAR_MEMORY_ITERATOR
         printf("[%s:%d] Increased NUM from %lu by %lu, to %lu\n", __FILE__,
                __LINE__, old, t_howMuch, num);
         assert(num < max_size);
@@ -119,7 +119,7 @@ private:
     }
 
 public:
-    constexpr LogIterator(pointer t_root, int t_num, bool t_partOfSecondHalf)
+    constexpr CircularMemoryIterator(pointer t_root, int t_num, bool t_partOfSecondHalf)
         : root(t_root), num(t_num), partOfSecondHalf(t_partOfSecondHalf)
     {
 
@@ -127,46 +127,46 @@ public:
         {
             num += max_size;
         }
-#if DEBUG_LOGITERATOR
+#if DEBUG_CIRCULAR_MEMORY_ITERATOR
         DEBUG_PART(this);
         assert(num < max_size);
 #endif
     }
-    constexpr LogIterator(const LogIterator<Type, max_size> &rawIterator) =
+    constexpr CircularMemoryIterator(const CircularMemoryIterator<Type, max_size> &rawIterator) =
         default;
-    constexpr LogIterator &operator++() noexcept
+    constexpr CircularMemoryIterator &operator++() noexcept
     {
         DEBUG_PART(this);
         incrementIndex(1u);
         return *this;
     }
-    constexpr LogIterator operator++(int) noexcept
+    constexpr CircularMemoryIterator operator++(int) noexcept
     {
         DEBUG_PART(this);
-        LogIterator retval = *this;
+        CircularMemoryIterator retval = *this;
         ++(*this);
         return retval;
     }
-    constexpr LogIterator &operator--() noexcept
+    constexpr CircularMemoryIterator &operator--() noexcept
     {
         DEBUG_PART(this);
         decrimentIndex(1u);
         return *this;
     }
-    constexpr LogIterator operator--(int) noexcept
+    constexpr CircularMemoryIterator operator--(int) noexcept
     {
-        LogIterator retval = *this;
+        CircularMemoryIterator retval = *this;
         --(*this);
         return retval;
     }
-    [[nodiscard]] constexpr LogIterator &
+    [[nodiscard]] constexpr CircularMemoryIterator &
     operator+=(const difference_type &movement) noexcept
     {
         DEBUG_PART(this);
         incrementIndex(movement);
         return (*this);
     }
-    [[nodiscard]] constexpr LogIterator<Type, max_size>
+    [[nodiscard]] constexpr CircularMemoryIterator<Type, max_size>
     operator-=(const difference_type &movement) noexcept
     {
         DEBUG_PART(this);
@@ -174,12 +174,12 @@ public:
         return (*this);
     }
     [[nodiscard]] constexpr bool
-    operator==(const LogIterator &other) const noexcept
+    operator==(const CircularMemoryIterator &other) const noexcept
     {
         return (num == other.num) && (partOfSecondHalf == other.partOfSecondHalf);
     }
     [[nodiscard]] constexpr bool
-    operator!=(const LogIterator &other) const noexcept
+    operator!=(const CircularMemoryIterator &other) const noexcept
     {
         return !(*this == other);
     }
@@ -200,7 +200,7 @@ public:
         return &root[num];
     }
     [[nodiscard]] constexpr difference_type
-    operator-(const LogIterator &b) const noexcept
+    operator-(const CircularMemoryIterator &b) const noexcept
     {
         DEBUG_PART(this);
         DEBUG_PART((&b));
@@ -210,7 +210,7 @@ public:
 
         difference_type ret = thisModNum - bModNum;
 
-#if DEBUG_LOGITERATOR
+#if DEBUG_CIRCULAR_MEMORY_ITERATOR
         printf("[%s:%d] (this->num=%lu->%lu, b.num=%lu->%lu)\n", __FILE__,
                __LINE__, this->num, thisModNum, b.num, bModNum);
         printf("[%s:%d] distance=%ld (this->num=%lu, b.num=%lu)\n", __FILE__,
@@ -219,7 +219,7 @@ public:
         return ret;
     }
 
-    [[nodiscard]] constexpr LogIterator
+    [[nodiscard]] constexpr CircularMemoryIterator
     operator-(const difference_type &movement) const noexcept
     {
         difference_type distance = this->num - movement;
@@ -229,7 +229,7 @@ public:
         {
             distance += max_size;
         }
-#if DEBUG_LOGITERATOR
+#if DEBUG_CIRCULAR_MEMORY_ITERATOR
         // printf("[%s:%d] this->num=%lu, partOfSecondHalf=%s, movement=%ld,
         //        distance           = % ld,
         //        nowPartOfFirstHalf = % s,
@@ -241,21 +241,21 @@ public:
         //                                                         : "true");
         assert(!(!this->partOfSecondHalf && nowPartOfFirstHalf));
 #endif
-        return LogIterator(root, distance,
+        return CircularMemoryIterator(root, distance,
                            nowPartOfFirstHalf ? false : this->partOfSecondHalf);
     }
 
-    [[nodiscard]] constexpr LogIterator<Type, max_size>
+    [[nodiscard]] constexpr CircularMemoryIterator<Type, max_size>
     operator+(const size_t b) const noexcept
     {
         const difference_type distance = (this->num + b) % max_size;
         const bool nowPartOfSecondHalf = this->num + b >= max_size;
-#if DEBUG_LOGITERATOR
+#if DEBUG_CIRCULAR_MEMORY_ITERATOR
         assert(!(this->partOfSecondHalf && nowPartOfSecondHalf));
         // printf("[%s:%d] num=%lu (this->num(%lu) + b(%lu))%%max_size\n",
         //        __FILE__, __LINE__, distance, this->num, b);
 #endif
-        return LogIterator<Type, max_size>(
+        return CircularMemoryIterator<Type, max_size>(
             root, distance, this->partOfSecondHalf || nowPartOfSecondHalf);
     }
 
@@ -265,7 +265,7 @@ public:
         return &root[num];
     }
 
-    bool operator<(const LogIterator<Type, max_size> &t_second) const
+    bool operator<(const CircularMemoryIterator<Type, max_size> &t_second) const
     {
         if (t_second.partOfSecondHalf == true && this->partOfSecondHalf == false)
             return true;
@@ -275,6 +275,6 @@ public:
     }
 };
 
-#if defined(DEBUG) && defined(DEBUG_LOGITERATOR) && DEBUG_LOGITERATOR
+#if defined(DEBUG) && defined(DEBUG_CIRCULAR_MEMORY_ITERATOR) && DEBUG_CIRCULAR_MEMORY_ITERATOR
 #pragma GCC pop_options
 #endif

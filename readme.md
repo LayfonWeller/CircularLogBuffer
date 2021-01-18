@@ -1,4 +1,4 @@
-# Circular Logs Buffer
+# Circular Memories Buffer
 
 A small C++ templated object that contains 0 to SIZE (template parameter) object.
 

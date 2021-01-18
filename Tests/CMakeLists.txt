@@ -30,8 +30,8 @@ endif()
 enable_testing()
 
 Test_Utils_Init()
-Add_Unit_Test(circularLogIterators.unit.cpp DEP_LIBS CircularIterator)
-Add_Unit_Test(circularLog.unit.cpp DEP_LIBS CircularIterator)
+Add_Unit_Test(circularMemoryIterators.unit.cpp DEP_LIBS CircularIterator)
+Add_Unit_Test(circularMemory.unit.cpp DEP_LIBS CircularIterator)
 
 
 project_add_dependencies(CircularIterator)

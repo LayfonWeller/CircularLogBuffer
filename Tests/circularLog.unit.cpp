@@ -1,6 +1,6 @@
 #include <catch2/catch.hpp>
 
-#include <CircularLogs.hpp>
+#include <CircularMemory.hpp>
 
 // FIXME Fails to compile with clang-9.0.0 (x86-pc-windows-msvc)
 TEMPLATE_TEST_CASE("KeyComparasion", "[KeyComparasion][template]", uint8_t, int8_t)
@@ -14,16 +14,16 @@ TEMPLATE_TEST_CASE("KeyComparasion", "[KeyComparasion][template]", uint8_t, int8
                        static_cast<TestType>(
                            (std::numeric_limits<TestType>::max() - std::numeric_limits<TestType>::min()) / 2))));
 
-    REQUIRE(ns_CircularLogs::Details::key_lesserThen(static_cast<TestType>(i + f), i)
-            != ns_CircularLogs::Details::key_lesserThen(i, static_cast<TestType>(i + f)));
+    REQUIRE(ns_CircularMemory::Details::key_lesserThen(static_cast<TestType>(i + f), i)
+            != ns_CircularMemory::Details::key_lesserThen(i, static_cast<TestType>(i + f)));
   }
 
-  SECTION("EQUALS") { REQUIRE(false == ns_CircularLogs::Details::key_lesserThen(i, i)); }
+  SECTION("EQUALS") { REQUIRE(false == ns_CircularMemory::Details::key_lesserThen(i, i)); }
 
   SECTION("LessThen false")
   {
-    REQUIRE(ns_CircularLogs::Details::key_lesserThen(i, static_cast<TestType>(i + 1))
-            != ns_CircularLogs::Details::key_lesserThen(static_cast<TestType>(i + 1), i));
+    REQUIRE(ns_CircularMemory::Details::key_lesserThen(i, static_cast<TestType>(i + 1))
+            != ns_CircularMemory::Details::key_lesserThen(static_cast<TestType>(i + 1), i));
   }
 }
 
@@ -37,24 +37,24 @@ TEMPLATE_TEST_CASE("KeyComparasion - All", "[.KeyComparasion][template][All]", u
         static_cast<TestType>(1),
         static_cast<TestType>((std::numeric_limits<TestType>::max() - std::numeric_limits<TestType>::min()) / 2)));
 
-    REQUIRE(ns_CircularLogs::Details::key_lesserThen(static_cast<TestType>(i + f), i)
-            != ns_CircularLogs::Details::key_lesserThen(i, static_cast<TestType>(i + f)));
+    REQUIRE(ns_CircularMemory::Details::key_lesserThen(static_cast<TestType>(i + f), i)
+            != ns_CircularMemory::Details::key_lesserThen(i, static_cast<TestType>(i + f)));
   }
 
-  SECTION("EQUALS") { REQUIRE(false == ns_CircularLogs::Details::key_lesserThen(i, i)); }
+  SECTION("EQUALS") { REQUIRE(false == ns_CircularMemory::Details::key_lesserThen(i, i)); }
 
   SECTION("LessThen false")
   {
-    REQUIRE(ns_CircularLogs::Details::key_lesserThen(i, static_cast<TestType>(i + 1))
-            != ns_CircularLogs::Details::key_lesserThen(static_cast<TestType>(i + 1), i));
+    REQUIRE(ns_CircularMemory::Details::key_lesserThen(i, static_cast<TestType>(i + 1))
+            != ns_CircularMemory::Details::key_lesserThen(static_cast<TestType>(i + 1), i));
   }
 }
 
-TEST_CASE("IndexedCircularLogs - push_back", "[IndexedCircularLogs][push_back]")
+TEST_CASE("IndexedCircularMemory - push_back", "[IndexedCircularMemory][push_back]")
 {
   SECTION("push_back 1 element")
   {
-    IndexedCircularLogs<int, 10> logs;
+    IndexedCircularMemory<int, 10> logs;
     logs.push_back(10);
     REQUIRE(logs.at(0).second == 10);
     REQUIRE(logs.r_at(0).second == 10);
@@ -63,7 +63,7 @@ TEST_CASE("IndexedCircularLogs - push_back", "[IndexedCircularLogs][push_back]")
   }
   SECTION("push_back 2 element")
   {
-    IndexedCircularLogs<int, 10> logs;
+    IndexedCircularMemory<int, 10> logs;
     logs.push_back(10);
     logs.push_back(20);
 
@@ -74,7 +74,7 @@ TEST_CASE("IndexedCircularLogs - push_back", "[IndexedCircularLogs][push_back]")
   }
   SECTION("push_back 10 element")
   {
-    IndexedCircularLogs<int, 10> logs;
+    IndexedCircularMemory<int, 10> logs;
     logs.push_back(10);
     logs.push_back(20);
     logs.push_back(30);
@@ -93,7 +93,7 @@ TEST_CASE("IndexedCircularLogs - push_back", "[IndexedCircularLogs][push_back]")
   }
   SECTION("push_back 15 element")
   {
-    IndexedCircularLogs<int, 10> logs;
+    IndexedCircularMemory<int, 10> logs;
     logs.push_back(10);
     logs.push_back(20);
     logs.push_back(30);
@@ -117,25 +117,25 @@ TEST_CASE("IndexedCircularLogs - push_back", "[IndexedCircularLogs][push_back]")
   }
 }
 
-TEST_CASE("IndexedCircularLogs - iterator", "[IndexedCircularLogs][iterator]")
+TEST_CASE("IndexedCircularMemory - iterator", "[IndexedCircularMemory][iterator]")
 {
   SECTION("0 element -> begin == end")
   {
-    IndexedCircularLogs<int, 10> logs;
+    IndexedCircularMemory<int, 10> logs;
 
     REQUIRE(std::begin(logs) == std::end(logs));
     REQUIRE(0 == std::distance(std::begin(logs), std::end(logs)));
   }
   SECTION("0 element -> rbegin == rend")
   {
-    IndexedCircularLogs<int, 10> logs;
+    IndexedCircularMemory<int, 10> logs;
 
     REQUIRE(std::rbegin(logs) == std::rend(logs));
     REQUIRE(0 == std::distance(std::rbegin(logs), std::rend(logs)));
   }
   SECTION("1 element -> begin != end")
   {
-    IndexedCircularLogs<int, 10> logs;
+    IndexedCircularMemory<int, 10> logs;
     logs.push_back(0);
 
     REQUIRE(std::begin(logs) != std::end(logs));
@@ -144,7 +144,7 @@ TEST_CASE("IndexedCircularLogs - iterator", "[IndexedCircularLogs][iterator]")
   }
   SECTION("1 element -> rbegin != rend")
   {
-    IndexedCircularLogs<int, 10> logs;
+    IndexedCircularMemory<int, 10> logs;
     logs.push_back(0);
 
     REQUIRE(std::rbegin(logs) != std::rend(logs));
@@ -153,7 +153,7 @@ TEST_CASE("IndexedCircularLogs - iterator", "[IndexedCircularLogs][iterator]")
   }
   SECTION("10 element -> begin != end")
   {
-    IndexedCircularLogs<int, 10> logs;
+    IndexedCircularMemory<int, 10> logs;
     logs.push_back(0);
     logs.push_back(1);
     logs.push_back(2);
@@ -172,7 +172,7 @@ TEST_CASE("IndexedCircularLogs - iterator", "[IndexedCircularLogs][iterator]")
   }
   SECTION("10 element -> begin != end")
   {
-    IndexedCircularLogs<int, 10> logs;
+    IndexedCircularMemory<int, 10> logs;
     logs.push_back(0);
     logs.push_back(1);
     logs.push_back(2);
@@ -191,7 +191,7 @@ TEST_CASE("IndexedCircularLogs - iterator", "[IndexedCircularLogs][iterator]")
   }
   SECTION("15 element -> begin != end")
   {
-    IndexedCircularLogs<int, 10> logs;
+    IndexedCircularMemory<int, 10> logs;
     logs.push_back(0);
     logs.push_back(1);
     logs.push_back(2);
@@ -215,7 +215,7 @@ TEST_CASE("IndexedCircularLogs - iterator", "[IndexedCircularLogs][iterator]")
   }
   SECTION("15 element -> begin != end")
   {
-    IndexedCircularLogs<int, 10> logs;
+    IndexedCircularMemory<int, 10> logs;
     logs.push_back(0);
     logs.push_back(1);
     logs.push_back(2);
@@ -239,7 +239,7 @@ TEST_CASE("IndexedCircularLogs - iterator", "[IndexedCircularLogs][iterator]")
   }
   SECTION("GetDistance from start")
   {
-    IndexedCircularLogs<int, 10> logs;
+    IndexedCircularMemory<int, 10> logs;
     logs.push_back(0);
     logs.push_back(1);
     logs.push_back(2);
@@ -257,7 +257,7 @@ TEST_CASE("IndexedCircularLogs - iterator", "[IndexedCircularLogs][iterator]")
     logs.push_back(14);
 
     const auto f = GENERATE(range(0, 20));
-    const auto GetDistance = [&logs](const uint8_t t_wantedIndex) ->IndexedCircularLogs<int, 10>::difference_type
+    const auto GetDistance = [&logs](const uint8_t t_wantedIndex) ->IndexedCircularMemory<int, 10>::difference_type
     {
       const auto it = logs.get_index(t_wantedIndex);
       if (it != std::end(logs)) {
@@ -279,7 +279,7 @@ TEST_CASE("IndexedCircularLogs - iterator", "[IndexedCircularLogs][iterator]")
   }
   SECTION("Reverse GetDistance")
   {
-    IndexedCircularLogs<int, 10> logs;
+    IndexedCircularMemory<int, 10> logs;
     logs.push_back(0);
     logs.push_back(1);
     logs.push_back(2);
@@ -297,7 +297,7 @@ TEST_CASE("IndexedCircularLogs - iterator", "[IndexedCircularLogs][iterator]")
     logs.push_back(14);
 
     const auto f = GENERATE(range(0, 20));
-    const auto GetDistance = [&logs](const uint8_t t_wantedIndex) ->IndexedCircularLogs<int, 10>::difference_type
+    const auto GetDistance = [&logs](const uint8_t t_wantedIndex) ->IndexedCircularMemory<int, 10>::difference_type
     {
       const auto it = logs.get_index(t_wantedIndex);
       if (it != std::end(logs)) {
@@ -319,7 +319,7 @@ TEST_CASE("IndexedCircularLogs - iterator", "[IndexedCircularLogs][iterator]")
   }
   SECTION("last index is wrapping_index")
   {
-    IndexedCircularLogs<int, 10> logs;
+    IndexedCircularMemory<int, 10> logs;
     logs.push_back(10);
     logs.push_back(20);
     logs.push_back(30);
@@ -340,11 +340,11 @@ TEST_CASE("IndexedCircularLogs - iterator", "[IndexedCircularLogs][iterator]")
   }
 }
 
-TEST_CASE("IndexedCircularLogs - get_index", "[IndexedCircularLogs][get_index]")
+TEST_CASE("IndexedCircularMemory - get_index", "[IndexedCircularMemory][get_index]")
 {
   SECTION("get_index")
   {
-    IndexedCircularLogs<int, 10> logs;
+    IndexedCircularMemory<int, 10> logs;
     logs.push_back(10);
     logs.push_back(20);
     logs.push_back(30);
@@ -370,7 +370,7 @@ TEST_CASE("IndexedCircularLogs - get_index", "[IndexedCircularLogs][get_index]")
 
   SECTION("get_index distance")
   {
-    IndexedCircularLogs<int, 10> logs;
+    IndexedCircularMemory<int, 10> logs;
     logs.push_back(10);
     logs.push_back(20);
     logs.push_back(30);
@@ -395,7 +395,7 @@ TEST_CASE("IndexedCircularLogs - get_index", "[IndexedCircularLogs][get_index]")
 
   SECTION("get_index distance invalid")
   {
-    IndexedCircularLogs<int, 10> logs;
+    IndexedCircularMemory<int, 10> logs;
     logs.push_back(10);
     logs.push_back(20);
     logs.push_back(30);
@@ -419,7 +419,7 @@ TEST_CASE("IndexedCircularLogs - get_index", "[IndexedCircularLogs][get_index]")
   SECTION("get_index distance Wrapping Index")
   {
     constexpr uint8_t            somewhatBefore = std::numeric_limits<uint8_t>::max() - 5;
-    IndexedCircularLogs<int, 10> logs(250);
+    IndexedCircularMemory<int, 10> logs(250);
     logs.push_back(10);
     logs.push_back(20);
     logs.push_back(30);
