@@ -25,6 +25,20 @@ TEMPLATE_TEST_CASE("KeyComparasion", "[KeyComparasion][template]", uint8_t, int8
     REQUIRE(ns_CircularMemory::Details::key_lesserThen(i, static_cast<TestType>(i + 1))
             != ns_CircularMemory::Details::key_lesserThen(static_cast<TestType>(i + 1), i));
   }
+
+  SECTION("LessThen max and min")
+  {
+    REQUIRE(ns_CircularMemory::Details::key_lesserThen(std::numeric_limits<TestType>::max(),
+                                                       std::numeric_limits<TestType>::min())
+            != ns_CircularMemory::Details::key_lesserThen(std::numeric_limits<TestType>::min(),
+                                                          std::numeric_limits<TestType>::max()));
+    REQUIRE(ns_CircularMemory::Details::key_lesserThen(std::numeric_limits<TestType>::max(),
+                                                       std::numeric_limits<TestType>::min())
+            == true);
+    REQUIRE(ns_CircularMemory::Details::key_lesserThen(std::numeric_limits<TestType>::min(),
+                                                       std::numeric_limits<TestType>::max())
+            == false);
+  }
 }
 
 TEMPLATE_TEST_CASE("KeyComparasion - All", "[.KeyComparasion][template][All]", uint8_t, int8_t)
@@ -256,26 +270,24 @@ TEST_CASE("IndexedCircularMemory - iterator", "[IndexedCircularMemory][iterator]
     logs.push_back(13);
     logs.push_back(14);
 
-    const auto f = GENERATE(range(0, 20));
-    const auto GetDistance = [&logs](const uint8_t t_wantedIndex) ->IndexedCircularMemory<int, 10>::difference_type
-    {
+    const auto f           = GENERATE(range(0, 20));
+    const auto GetDistance = [&logs](const uint8_t t_wantedIndex) -> IndexedCircularMemory<int, 10>::difference_type {
       const auto it = logs.get_index(t_wantedIndex);
       if (it != std::end(logs)) {
-          return std::distance(std::begin(logs), it) + 1;
+        return std::distance(std::begin(logs), it) + 1;
       }
       return -1;
     };
 
-    if (f<5) {
+    if (f < 5) {
       REQUIRE(GetDistance(f) == -1);
-    } else if (f>14) {
+    } else if (f > 14) {
       REQUIRE(GetDistance(f) == -1);
     } else {
-      REQUIRE(GetDistance(f) == f-4);
+      REQUIRE(GetDistance(f) == f - 4);
     }
     REQUIRE(GetDistance(std::begin(logs)->first) == 1);
     REQUIRE(GetDistance(std::rbegin(logs)->first) == 10);
-
   }
   SECTION("Reverse GetDistance")
   {
@@ -296,26 +308,24 @@ TEST_CASE("IndexedCircularMemory - iterator", "[IndexedCircularMemory][iterator]
     logs.push_back(13);
     logs.push_back(14);
 
-    const auto f = GENERATE(range(0, 20));
-    const auto GetDistance = [&logs](const uint8_t t_wantedIndex) ->IndexedCircularMemory<int, 10>::difference_type
-    {
+    const auto f           = GENERATE(range(0, 20));
+    const auto GetDistance = [&logs](const uint8_t t_wantedIndex) -> IndexedCircularMemory<int, 10>::difference_type {
       const auto it = logs.get_index(t_wantedIndex);
       if (it != std::end(logs)) {
-          return std::distance(std::rbegin(logs), std::make_reverse_iterator(it));
+        return std::distance(std::rbegin(logs), std::make_reverse_iterator(it));
       }
       return -1;
     };
 
-    if (f<5) {
+    if (f < 5) {
       REQUIRE(GetDistance(f) == -1);
-    } else if (f>14) {
+    } else if (f > 14) {
       REQUIRE(GetDistance(f) == -1);
     } else {
-      REQUIRE(GetDistance(f) == 15-f);
+      REQUIRE(GetDistance(f) == 15 - f);
     }
     REQUIRE(GetDistance(std::rbegin(logs)->first) == 1);
     REQUIRE(GetDistance(std::begin(logs)->first) == 10);
-
   }
   SECTION("last index is wrapping_index")
   {
@@ -418,7 +428,7 @@ TEST_CASE("IndexedCircularMemory - get_index", "[IndexedCircularMemory][get_inde
 
   SECTION("get_index distance Wrapping Index")
   {
-    constexpr uint8_t            somewhatBefore = std::numeric_limits<uint8_t>::max() - 5;
+    constexpr uint8_t              somewhatBefore = std::numeric_limits<uint8_t>::max() - 5;
     IndexedCircularMemory<int, 10> logs(250);
     logs.push_back(10);
     logs.push_back(20);

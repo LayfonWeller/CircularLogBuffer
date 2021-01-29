@@ -6,7 +6,7 @@
 
 #define DEBUG_PART(a)                                                    \
     {                                                                    \
-        printf("[%s:%d] num=%lu Second Half = %s\n", __FILE__, __LINE__, \
+        printf("[%s:%d] num=%llu Second Half = %s\n", __FILE__, __LINE__, \
                a->num, (a->partOfSecondHalf ? "true" : "false"));        \
     }
 // #define DEBUG_PART(a)                                                          \

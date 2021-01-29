@@ -34,13 +34,13 @@ using IsSameBaseType = std::enable_if_t<std::is_same_v<remove_cvref_t<T1>, remov
 template <typename T1, /*typename T2, IsSameBaseType<T1, T2> = true,*/ IsSignedInteger<T1> = true>
 constexpr bool key_lesserThen(T1 t_a, T1 t_b)
 {
-  return t_a < t_b;
+  return t_b - t_a < static_cast<T1>(0);
 }
-template <typename T1, /*typename T2, IsSameBaseType<T1, T2> = true,*/ IsUnsignedInteger<T1> = true>
+template <typename T1,/* typename T2, IsSameBaseType<T1, T2> = true,*/ IsUnsignedInteger<T1> = true>
 constexpr bool key_lesserThen(T1 t_a, T1 t_b)
 {
   using T           = remove_cvref_t<T1>;
-  const T halfPoint = std::numeric_limits<T>::max() / 2;
+  const T halfPoint = std::numeric_limits<T>::max()/ 2;
   const T t1        = t_b + halfPoint - t_a;
   return t1 > halfPoint;
 }
